@@ -172,7 +172,7 @@ Resource presence = m.createResource(wd+"Q24255051");
 Resource window = m.createResource(wd+"Q35473");
 Resource actuator = m.createResource(wd+"Q423488");
 Resource weather = m.createResource(wd+"Q11663");
-
+ 
 String eventStr = null;
 String fileAsString = null;
 
@@ -324,7 +324,6 @@ public void messageArrived(String topic, MqttMessage message)throws Exception {
 			e.printStackTrace();
 		}
 
-		deleteTasks();
 		
 
 
@@ -515,57 +514,5 @@ public String getCalendar() throws IOException, GeneralSecurityException {
 
 }
 
-public void deleteTasks() throws FileNotFoundException, IOException, GeneralSecurityException{
-	final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    Tasks service = new Tasks.Builder(HTTP_TRANSPORT, JSON_FACTORY_TASKS, getCredentials(HTTP_TRANSPORT))
-        .setApplicationName(APPLICATION_NAME_TASKS)
-        .build();
-	System.out.println("a");	
-	long numTasks=10;
-    // Print the first 10 task lists.
-    TaskLists result = service.tasklists().list()
-        .setMaxResults(numTasks)
-        .execute();
-    List<TaskList> taskLists = result.getItems();
-    if (taskLists == null || taskLists.isEmpty()) {
-      System.out.println("No task lists found.");
-    } else {
-      System.out.println("Task lists:");
-      for (TaskList tasklist : taskLists) {
-        System.out.printf("%s (%s)\n", tasklist.getTitle(), tasklist.getId());
-      }
-    }
-}
-public void addTasks(){
 
-}
-	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
-	throws IOException {
-	// Load client secrets.
-
-	// if (in == null) {
-	// throw new FileNotFoundException("Resource not found: " + pathCredentialTasks);
-	// }
-
-
-	FileInputStream fileInputStream = new FileInputStream(pathCredentialTasks);
-	Scanner scanner = new Scanner(fileInputStream).useDelimiter("\\A");
-
-	String credentialJsoString = scanner.hasNext() ? scanner.next() : "";
-	scanner.close();
-	
-
-	GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY_TASKS, new StringReader(credentialJsoString));
-	// Build flow and trigger user authorization request.
-	
-
-	System.out.println("d");
-	GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-	HTTP_TRANSPORT, JSON_FACTORY_TASKS, clientSecrets, SCOPESTasks)
-	.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-	.setAccessType("offline")
-	.build();
-	LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-	return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-	}
 }
